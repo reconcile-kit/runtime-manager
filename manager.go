@@ -2,6 +2,7 @@ package runtimemanager
 
 import (
 	"context"
+	"fmt"
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
 	event "github.com/reconcile-kit/redis-informer-provider"
@@ -55,10 +56,11 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 	}
 
 	application.logger.Info(
-		"Shard ID:", shardID,
-		"Informer address:", informerAddr,
-		"External address:", externalStorageAddr)
-
+		fmt.Sprintf("Shard ID:%s, InformerAddress:%s, ExternalAddress:%s",
+			shardID,
+			informerAddr,
+			externalStorageAddr),
+	)
 	return application
 }
 
