@@ -54,6 +54,11 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 		application.httpClient = &http.Client{}
 	}
 
+	application.logger.Info(
+		"Shard ID:", shardID,
+		"Informer address:", informerAddr,
+		"External address:", externalStorageAddr)
+
 	return application
 }
 
