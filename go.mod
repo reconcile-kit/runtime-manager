@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	github.com/reconcile-kit/api v0.0.13
 	github.com/reconcile-kit/controlloop v0.0.10
-	github.com/reconcile-kit/redis-informer-provider v0.0.1
+	github.com/reconcile-kit/redis-informer-provider v0.0.2
 	github.com/reconcile-kit/state-manager-provider v0.0.7
 )
 

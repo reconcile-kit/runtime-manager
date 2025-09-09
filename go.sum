@@ -27,8 +27,8 @@ github.com/reconcile-kit/api v0.0.13 h1:4eHlMIk2u1q3mlUjCABnnYZSVHngcEQ1wo1scsJn
 github.com/reconcile-kit/api v0.0.13/go.mod h1:XUUXZvlt5fGlY8LMNmfbeFBZhmoPPj6fJ8mqcdW6Ya8=
 github.com/reconcile-kit/controlloop v0.0.10 h1:OlulvNg4/1n6SZd8xrbZFwHAmV4Gwzw1mhVzfDcl5mY=
 github.com/reconcile-kit/controlloop v0.0.10/go.mod h1:a/q/fC3NRSGfsiD3ULi6UZ7hk9Hu3JH4vYwKm2QeQzw=
-github.com/reconcile-kit/redis-informer-provider v0.0.1 h1:NNM3CY/VMoCA+odHJ+hq37JC9RgWe1C1dKuGktrwGCM=
-github.com/reconcile-kit/redis-informer-provider v0.0.1/go.mod h1:ySctrUy08QWGBxZAELKpjwCDkHpQbvV8LaPg+KqutGQ=
+github.com/reconcile-kit/redis-informer-provider v0.0.2 h1:8sZA4mzt02iMQRk8EvxkRBy0E+8vo2m7Gm5cjjatrKs=
+github.com/reconcile-kit/redis-informer-provider v0.0.2/go.mod h1:n+B94DH19tnHg2L1VV4TiDSDtzsNytqyIKrclZqKUCY=
 github.com/reconcile-kit/state-manager-provider v0.0.7 h1:sP2+LOGPlilrtpM/rD4zvIObPtYf1CZ8JdgTc+MORlo=
 github.com/reconcile-kit/state-manager-provider v0.0.7/go.mod h1:7LnObWAekZF0SAUTads+4Wfp16/aPzQShUfeQQPtmOY=
 github.com/redis/go-redis/v9 v9.8.0 h1:q3nRvjrlge/6UD7eTu/DSg2uYiU2mCL0G/uzBWqhicI=

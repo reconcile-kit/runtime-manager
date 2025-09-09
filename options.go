@@ -6,8 +6,17 @@ import (
 )
 
 type Options struct {
-	Logger     controlloop.Logger
-	httpClient *http.Client
+	Logger             controlloop.Logger
+	httpClient         *http.Client
+	informerAuthConfig *InformerAuthConfig
+}
+
+type InformerAuthConfig struct {
+	Username      string
+	Password      string
+	CertFilePath  string
+	KeyFilePath   string
+	SkipTLSVerify bool
 }
 
 type Option func(*Options)
@@ -21,5 +30,11 @@ func WithLogger(logger controlloop.Logger) Option {
 func WithHTTPClient(httpClient *http.Client) Option {
 	return func(o *Options) {
 		o.httpClient = httpClient
+	}
+}
+
+func WithInformerAuthConfig(informerAuthConfig *InformerAuthConfig) Option {
+	return func(o *Options) {
+		o.informerAuthConfig = informerAuthConfig
 	}
 }

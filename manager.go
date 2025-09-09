@@ -24,6 +24,7 @@ type Manager struct {
 	shardID                string
 	receivers              []cl.Receiver
 	informerAddress        string
+	informerAuthConfig     *InformerAuthConfig
 	externalStorageAddress string
 	storageSet             *cl.StorageSet
 	stopped                []Stopped
@@ -53,6 +54,10 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 		application.httpClient = options.httpClient
 	} else {
 		application.httpClient = &http.Client{}
+	}
+
+	if options.informerAuthConfig != nil {
+		application.informerAuthConfig = options.informerAuthConfig
 	}
 
 	application.logger.Info(
@@ -89,7 +94,17 @@ func (a *Manager) Stop() {
 }
 
 func (a *Manager) Run(ctx context.Context) error {
-	eventProvider, err := event.NewRedisStreamListener(a.informerAddress, a.shardID)
+	redisConfig := &event.RedisConfig{
+		Addr: a.informerAddress,
+	}
+	if a.informerAuthConfig != nil {
+		redisConfig.CertFile = a.informerAuthConfig.CertFilePath
+		redisConfig.KeyFile = a.informerAuthConfig.KeyFilePath
+		redisConfig.Username = a.informerAuthConfig.Username
+		redisConfig.Password = a.informerAuthConfig.Password
+		redisConfig.InsecureSkip = a.informerAuthConfig.SkipTLSVerify
+	}
+	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID)
 	if err != nil {
 		return err
 	}
