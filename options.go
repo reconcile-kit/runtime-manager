@@ -12,11 +12,9 @@ type Options struct {
 }
 
 type InformerAuthConfig struct {
-	Username      string
-	Password      string
-	CertFilePath  string
-	KeyFilePath   string
-	SkipTLSVerify bool
+	Username  string
+	Password  string
+	EnableTLS bool
 }
 
 type Option func(*Options)

@@ -98,11 +98,9 @@ func (a *Manager) Run(ctx context.Context) error {
 		Addr: a.informerAddress,
 	}
 	if a.informerAuthConfig != nil {
-		redisConfig.CertFile = a.informerAuthConfig.CertFilePath
-		redisConfig.KeyFile = a.informerAuthConfig.KeyFilePath
 		redisConfig.Username = a.informerAuthConfig.Username
 		redisConfig.Password = a.informerAuthConfig.Password
-		redisConfig.InsecureSkip = a.informerAuthConfig.SkipTLSVerify
+		redisConfig.EnableTLS = a.informerAuthConfig.EnableTLS
 	}
 	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID)
 	if err != nil {
