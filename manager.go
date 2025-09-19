@@ -76,6 +76,11 @@ func (a *Manager) addStopped(stopped Stopped) {
 	a.stopped = append(a.stopped, stopped)
 }
 
+func (a *Manager) Shutdown(ctx context.Context) error {
+	a.Stop()
+	return nil
+}
+
 func (a *Manager) Stop() {
 	stoopedCount := len(a.stopped)
 	if stoopedCount == 0 {
