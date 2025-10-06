@@ -3,10 +3,10 @@ module github.com/reconcile-kit/runtime-manager
 go 1.24.2
 
 require (
-	github.com/reconcile-kit/api v0.0.14
+	github.com/reconcile-kit/api v0.0.15
 	github.com/reconcile-kit/controlloop v0.0.10
 	github.com/reconcile-kit/redis-informer-provider v0.0.3
-	github.com/reconcile-kit/state-manager-provider v0.0.7
+	github.com/reconcile-kit/state-manager-provider v0.0.8
 )
 
 require (
