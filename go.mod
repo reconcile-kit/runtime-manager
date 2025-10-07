@@ -6,7 +6,7 @@ require (
 	github.com/reconcile-kit/api v0.0.15
 	github.com/reconcile-kit/controlloop v0.0.10
 	github.com/reconcile-kit/redis-informer-provider v0.0.3
-	github.com/reconcile-kit/state-manager-provider v0.0.8
+	github.com/reconcile-kit/state-manager-provider v0.0.9
 )
 
 require (

@@ -29,8 +29,8 @@ github.com/reconcile-kit/controlloop v0.0.10 h1:OlulvNg4/1n6SZd8xrbZFwHAmV4Gwzw1
 github.com/reconcile-kit/controlloop v0.0.10/go.mod h1:a/q/fC3NRSGfsiD3ULi6UZ7hk9Hu3JH4vYwKm2QeQzw=
 github.com/reconcile-kit/redis-informer-provider v0.0.3 h1:jRfTrK+Gg7V8FR+E9WB2dNNBbVo2//WMD+2mKmVAfBU=
 github.com/reconcile-kit/redis-informer-provider v0.0.3/go.mod h1:n+B94DH19tnHg2L1VV4TiDSDtzsNytqyIKrclZqKUCY=
-github.com/reconcile-kit/state-manager-provider v0.0.8 h1:nN95WHRQfmmJygXCyMVO6DDWaK3+3Pu1037VvY+Y7RM=
-github.com/reconcile-kit/state-manager-provider v0.0.8/go.mod h1:r2JSDee736toIMqBjSU7ks3TEwiYUrHiGogRoXHslT8=
+github.com/reconcile-kit/state-manager-provider v0.0.9 h1:/LW/z1na/xhaGub/SlUBZbWBiH/yqxhrlRyY21YVtXA=
+github.com/reconcile-kit/state-manager-provider v0.0.9/go.mod h1:r2JSDee736toIMqBjSU7ks3TEwiYUrHiGogRoXHslT8=
 github.com/redis/go-redis/v9 v9.8.0 h1:q3nRvjrlge/6UD7eTu/DSg2uYiU2mCL0G/uzBWqhicI=
 github.com/redis/go-redis/v9 v9.8.0/go.mod h1:huWgSWd8mW6+m0VPhJjSSQ+d6Nh1VICQ6Q5lHuCH/Iw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
