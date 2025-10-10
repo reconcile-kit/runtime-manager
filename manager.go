@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
+	"github.com/reconcile-kit/controlloop/observability"
 	event "github.com/reconcile-kit/redis-informer-provider"
 	state "github.com/reconcile-kit/state-manager-provider"
+	"go.opentelemetry.io/otel/metric"
 	"net/http"
 	"sync"
 )
@@ -30,6 +32,7 @@ type Manager struct {
 	stopped                []Stopped
 	logger                 cl.Logger
 	httpClient             *http.Client
+	meterProvider          metric.Meter
 }
 
 func New(shardID string, informerAddr, externalStorageAddr string, opts ...Option) *Manager {
@@ -48,6 +51,10 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 		application.logger = options.Logger
 	} else {
 		application.logger = &cl.SimpleLogger{}
+	}
+
+	if options.meterProvider != nil {
+		application.meterProvider = options.meterProvider
 	}
 
 	if options.httpClient != nil {
@@ -99,6 +106,9 @@ func (a *Manager) Stop() {
 }
 
 func (a *Manager) Run(ctx context.Context) error {
+	observability.Init(observability.Options{
+		Meter: a.meterProvider,
+	})
 	redisConfig := &event.RedisConfig{
 		Addr: a.informerAddress,
 	}

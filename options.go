@@ -2,6 +2,7 @@ package runtimemanager
 
 import (
 	"github.com/reconcile-kit/controlloop"
+	"go.opentelemetry.io/otel/metric"
 	"net/http"
 )
 
@@ -9,6 +10,7 @@ type Options struct {
 	Logger             controlloop.Logger
 	httpClient         *http.Client
 	informerAuthConfig *InformerAuthConfig
+	meterProvider      metric.Meter
 }
 
 type InformerAuthConfig struct {
@@ -34,5 +36,11 @@ func WithHTTPClient(httpClient *http.Client) Option {
 func WithInformerAuthConfig(informerAuthConfig *InformerAuthConfig) Option {
 	return func(o *Options) {
 		o.informerAuthConfig = informerAuthConfig
+	}
+}
+
+func WithMeterProvider(meterProvider metric.Meter) Option {
+	return func(o *Options) {
+		o.meterProvider = meterProvider
 	}
 }
