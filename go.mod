@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/reconcile-kit/api v0.0.15
-	github.com/reconcile-kit/controlloop v0.0.11
+	github.com/reconcile-kit/controlloop v0.0.12
 	github.com/reconcile-kit/redis-informer-provider v0.0.4
 	github.com/reconcile-kit/state-manager-provider v0.0.9
 	go.opentelemetry.io/otel/metric v1.37.0
