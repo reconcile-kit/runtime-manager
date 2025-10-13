@@ -23,6 +23,11 @@ type Stopped interface {
 	Stop()
 }
 
+type controller interface {
+	Run()
+	Stop()
+}
+
 type Manager struct {
 	shardID                string
 	receivers              []cl.Receiver
@@ -34,6 +39,12 @@ type Manager struct {
 	logger                 cl.Logger
 	httpClient             *http.Client
 	meterProvider          metric.Meter
+	controllers            []*ctrlWrapper
+}
+
+type ctrlWrapper struct {
+	controller controller
+	receiver   cl.Receiver
 }
 
 func New(shardID string, informerAddr, externalStorageAddr string, opts ...Option) *Manager {
@@ -80,11 +91,34 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 	return application
 }
 
-func (a *Manager) addReceiver(receiver cl.Receiver) {
-	a.receivers = append(a.receivers, receiver)
-}
-func (a *Manager) addStopped(stopped Stopped) {
-	a.stopped = append(a.stopped, stopped)
+func (a *Manager) Run(ctx context.Context) error {
+	redisConfig := &event.RedisConfig{
+		Addr: a.informerAddress,
+	}
+	if a.informerAuthConfig != nil {
+		redisConfig.Username = a.informerAuthConfig.Username
+		redisConfig.Password = a.informerAuthConfig.Password
+		redisConfig.EnableTLS = a.informerAuthConfig.EnableTLS
+	}
+
+	var receivers []cl.Receiver
+	for _, r := range a.controllers {
+		r.controller.Run()
+		receivers = append(receivers, r.receiver)
+		a.stopped = append(a.stopped, r.controller)
+	}
+
+	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID, event.WithLogger(a.logger))
+	if err != nil {
+		return err
+	}
+
+	informer := cl.NewStorageInformer(a.shardID, eventProvider, receivers)
+	err = informer.Run(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *Manager) Shutdown(ctx context.Context) error {
@@ -107,28 +141,6 @@ func (a *Manager) Stop() {
 	}
 
 	wg.Wait()
-}
-
-func (a *Manager) Run(ctx context.Context) error {
-	redisConfig := &event.RedisConfig{
-		Addr: a.informerAddress,
-	}
-	if a.informerAuthConfig != nil {
-		redisConfig.Username = a.informerAuthConfig.Username
-		redisConfig.Password = a.informerAuthConfig.Password
-		redisConfig.EnableTLS = a.informerAuthConfig.EnableTLS
-	}
-	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID, event.WithLogger(a.logger))
-	if err != nil {
-		return err
-	}
-
-	informer := cl.NewStorageInformer(a.shardID, eventProvider, a.receivers)
-	err = informer.Run(ctx)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func SetRemoteClient[T resource.Object[T]](manager *Manager) error {
@@ -161,9 +173,11 @@ func SetController[T resource.Object[T]](manager *Manager, controller InitReconc
 	cl.SetStorage[T](manager.storageSet, sc)
 	controller.SetStorage(manager.storageSet)
 	currentLoop := cl.New[T](controller, sc, cl.WithLogger(manager.logger))
-	currentLoop.Run()
-	manager.addReceiver(sc)
-	manager.addStopped(currentLoop)
+	manager.registerController(currentLoop, sc)
 
 	return nil
+}
+
+func (a *Manager) registerController(ctrl controller, receiver cl.Receiver) {
+	a.controllers = append(a.controllers, &ctrlWrapper{controller: ctrl, receiver: receiver})
 }
