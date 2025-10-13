@@ -56,6 +56,9 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 	if options.meterProvider != nil {
 		application.meterProvider = options.meterProvider
 	}
+	observability.Init(observability.Options{
+		Meter: application.meterProvider,
+	})
 
 	if options.httpClient != nil {
 		application.httpClient = options.httpClient
@@ -106,9 +109,6 @@ func (a *Manager) Stop() {
 }
 
 func (a *Manager) Run(ctx context.Context) error {
-	observability.Init(observability.Options{
-		Meter: a.meterProvider,
-	})
 	redisConfig := &event.RedisConfig{
 		Addr: a.informerAddress,
 	}
