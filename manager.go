@@ -3,14 +3,15 @@ package runtimemanager
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"sync"
+
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
 	"github.com/reconcile-kit/controlloop/observability"
 	event "github.com/reconcile-kit/redis-informer-provider"
 	state "github.com/reconcile-kit/state-manager-provider"
 	"go.opentelemetry.io/otel/metric"
-	"net/http"
-	"sync"
 )
 
 type InitReconciler[T resource.Object[T]] interface {
@@ -117,7 +118,7 @@ func (a *Manager) Run(ctx context.Context) error {
 		redisConfig.Password = a.informerAuthConfig.Password
 		redisConfig.EnableTLS = a.informerAuthConfig.EnableTLS
 	}
-	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID)
+	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID, event.WithLogger(a.logger))
 	if err != nil {
 		return err
 	}
