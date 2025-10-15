@@ -156,23 +156,40 @@ func SetRemoteClient[T resource.Object[T]](manager *Manager) error {
 	return nil
 }
 
-func SetController[T resource.Object[T]](manager *Manager, controller InitReconciler[T], opts ...cl.StorageOption) error {
+func SetController[T resource.Object[T]](manager *Manager, controller InitReconciler[T], opts ...ControllerOption) error {
+	currentOpts := &controllerOptions{}
+	for _, opt := range opts {
+		opt(currentOpts)
+	}
+
 	sm, err := state.NewStateManagerProvider[T](manager.externalStorageAddress, manager.httpClient)
 	if err != nil {
 		return err
 	}
+
+	var storageOptions []cl.StorageOption
+	if currentOpts.rateLimits != nil {
+		storageOptions = append(storageOptions, cl.WithCustomRateLimits(currentOpts.rateLimits.Min, currentOpts.rateLimits.Max))
+	}
+
 	sc, err := cl.NewStorageController[T](
 		manager.shardID,
 		sm,
-		cl.NewMemoryStorage[T](opts...),
+		cl.NewMemoryStorage[T](storageOptions...),
 	)
 	if err != nil {
 		return err
 	}
 
+	var controlLoopOptions []cl.ClOption
+	controlLoopOptions = append(controlLoopOptions, cl.WithLogger(manager.logger))
+	if currentOpts.concurrentWorkers != 0 {
+		controlLoopOptions = append(controlLoopOptions, cl.WithConcurrentReconciles(currentOpts.concurrentWorkers))
+	}
+
 	cl.SetStorage[T](manager.storageSet, sc)
 	controller.SetStorage(manager.storageSet)
-	currentLoop := cl.New[T](controller, sc, cl.WithLogger(manager.logger))
+	currentLoop := cl.New[T](controller, sc, controlLoopOptions...)
 	manager.registerController(currentLoop, sc)
 
 	return nil
