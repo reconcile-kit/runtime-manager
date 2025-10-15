@@ -47,8 +47,8 @@ github.com/prometheus/procfs v0.17.0 h1:FuLQ+05u4ZI+SS/w9+BWEM2TXiHKsUQ9TADiRH7D
 github.com/prometheus/procfs v0.17.0/go.mod h1:oPQLaDAMRbA+u8H5Pbfq+dl3VDAvHxMUOVhe0wYB2zw=
 github.com/reconcile-kit/api v0.0.15 h1:oOCTiRgCUhfxXlTLYDZ5TfXFEHjjAlfuLViZoHbu3T4=
 github.com/reconcile-kit/api v0.0.15/go.mod h1:XUUXZvlt5fGlY8LMNmfbeFBZhmoPPj6fJ8mqcdW6Ya8=
-github.com/reconcile-kit/controlloop v0.0.12 h1:ql3Zxox1O3uc2zvQ5z6U2wKmGJ3iXiMlX5O/d4QBqw4=
-github.com/reconcile-kit/controlloop v0.0.12/go.mod h1:TLxl+0cFCUrA/oDLgTuoIxD6Xqx2THYKgs03fWGAoa8=
+github.com/reconcile-kit/controlloop v0.0.15 h1:gqEd7zDn83pNJQxw6djRgtqm6TdZcv7t3ZPbFxfOpKs=
+github.com/reconcile-kit/controlloop v0.0.15/go.mod h1:TLxl+0cFCUrA/oDLgTuoIxD6Xqx2THYKgs03fWGAoa8=
 github.com/reconcile-kit/redis-informer-provider v0.0.4 h1:ne0Z4D/u787A9JxHouPUj4B0QLQkji0LZjp15cTtJT4=
 github.com/reconcile-kit/redis-informer-provider v0.0.4/go.mod h1:n+B94DH19tnHg2L1VV4TiDSDtzsNytqyIKrclZqKUCY=
 github.com/reconcile-kit/state-manager-provider v0.0.9 h1:/LW/z1na/xhaGub/SlUBZbWBiH/yqxhrlRyY21YVtXA=

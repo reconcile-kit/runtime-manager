@@ -3,13 +3,17 @@ package runtimemanager
 import (
 	"context"
 	"fmt"
+	"github.com/reconcile-kit/controlloop/metrics"
+	"go.opentelemetry.io/otel"
+	"k8s.io/client-go/util/workqueue"
 	"net/http"
 	"sync"
 
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
-	"github.com/reconcile-kit/controlloop/observability"
 	event "github.com/reconcile-kit/redis-informer-provider"
+	cmetrics "github.com/reconcile-kit/runtime-manager/observability/controller/metrics"
+	wmetrics "github.com/reconcile-kit/runtime-manager/observability/workqueue/metrics"
 	state "github.com/reconcile-kit/state-manager-provider"
 	"go.opentelemetry.io/otel/metric"
 )
@@ -29,17 +33,19 @@ type controller interface {
 }
 
 type Manager struct {
-	shardID                string
-	receivers              []cl.Receiver
-	informerAddress        string
-	informerAuthConfig     *InformerAuthConfig
-	externalStorageAddress string
-	storageSet             *cl.StorageSet
-	stopped                []Stopped
-	logger                 cl.Logger
-	httpClient             *http.Client
-	meterProvider          metric.Meter
-	controllers            []*ctrlWrapper
+	shardID                 string
+	receivers               []cl.Receiver
+	informerAddress         string
+	informerAuthConfig      *InformerAuthConfig
+	externalStorageAddress  string
+	storageSet              *cl.StorageSet
+	stopped                 []Stopped
+	logger                  cl.Logger
+	httpClient              *http.Client
+	controllers             []*ctrlWrapper
+	meterProvider           metric.Meter
+	controllopMeterProvider metrics.MetricsProvider
+	workqueueMeterProvider  workqueue.MetricsProvider
 }
 
 type ctrlWrapper struct {
@@ -68,9 +74,16 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 	if options.meterProvider != nil {
 		application.meterProvider = options.meterProvider
 	}
-	observability.Init(observability.Options{
-		Meter: application.meterProvider,
-	})
+
+	application.controllopMeterProvider = cmetrics.NewControllerMetrics(otel.Meter("controlloop"))
+	if options.controllopMeterProvider != nil {
+		application.controllopMeterProvider = options.controllopMeterProvider
+	}
+
+	application.workqueueMeterProvider = wmetrics.NewWorkqueueMetricsProvider(otel.Meter("workqueue"))
+	if options.workqueueMeterProvider != nil {
+		application.workqueueMeterProvider = options.workqueueMeterProvider
+	}
 
 	if options.httpClient != nil {
 		application.httpClient = options.httpClient
@@ -164,7 +177,7 @@ func SetController[T resource.Object[T]](manager *Manager, controller InitReconc
 	sc, err := cl.NewStorageController[T](
 		manager.shardID,
 		sm,
-		cl.NewMemoryStorage[T](opts...),
+		cl.NewMemoryStorage[T](manager.workqueueMeterProvider, opts...),
 	)
 	if err != nil {
 		return err

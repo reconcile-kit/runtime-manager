@@ -4,10 +4,13 @@ go 1.24.2
 
 require (
 	github.com/reconcile-kit/api v0.0.15
-	github.com/reconcile-kit/controlloop v0.0.12
+	github.com/reconcile-kit/controlloop v0.0.15
 	github.com/reconcile-kit/redis-informer-provider v0.0.4
 	github.com/reconcile-kit/state-manager-provider v0.0.9
+	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/metric v1.37.0
+	go.opentelemetry.io/otel/sdk/metric v1.37.0
+	k8s.io/client-go v0.33.1
 )
 
 require (
@@ -21,14 +24,11 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/redis/go-redis/v9 v9.8.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.37.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	k8s.io/apimachinery v0.33.1 // indirect
-	k8s.io/client-go v0.33.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 )
