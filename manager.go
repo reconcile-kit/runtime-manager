@@ -33,19 +33,19 @@ type controller interface {
 }
 
 type Manager struct {
-	shardID                 string
-	receivers               []cl.Receiver
-	informerAddress         string
-	informerAuthConfig      *InformerAuthConfig
-	externalStorageAddress  string
-	storageSet              *cl.StorageSet
-	stopped                 []Stopped
-	logger                  cl.Logger
-	httpClient              *http.Client
-	controllers             []*ctrlWrapper
-	meterProvider           metric.Meter
-	controllopMeterProvider metrics.MetricsProvider
-	workqueueMeterProvider  workqueue.MetricsProvider
+	shardID                  string
+	receivers                []cl.Receiver
+	informerAddress          string
+	informerAuthConfig       *InformerAuthConfig
+	externalStorageAddress   string
+	storageSet               *cl.StorageSet
+	stopped                  []Stopped
+	logger                   cl.Logger
+	httpClient               *http.Client
+	controllers              []*ctrlWrapper
+	meterProvider            metric.MeterProvider
+	controlLoopMeterProvider metrics.MetricsProvider
+	workQueueMeterProvider   workqueue.MetricsProvider
 }
 
 type ctrlWrapper struct {
@@ -71,18 +71,19 @@ func New(shardID string, informerAddr, externalStorageAddr string, opts ...Optio
 		application.logger = &cl.SimpleLogger{}
 	}
 
+	application.meterProvider = otel.GetMeterProvider()
 	if options.meterProvider != nil {
 		application.meterProvider = options.meterProvider
 	}
 
-	application.controllopMeterProvider = cmetrics.NewControllerMetrics(otel.Meter("controlloop"))
-	if options.controllopMeterProvider != nil {
-		application.controllopMeterProvider = options.controllopMeterProvider
+	application.controlLoopMeterProvider = cmetrics.NewControllerMetrics(application.meterProvider.Meter("controlloop"))
+	if options.controlLopMeterProvider != nil {
+		application.controlLoopMeterProvider = options.controlLopMeterProvider
 	}
 
-	application.workqueueMeterProvider = wmetrics.NewWorkqueueMetricsProvider(otel.Meter("workqueue"))
-	if options.workqueueMeterProvider != nil {
-		application.workqueueMeterProvider = options.workqueueMeterProvider
+	application.workQueueMeterProvider = wmetrics.NewWorkqueueMetricsProvider(application.meterProvider.Meter("workqueue"))
+	if options.workQueueMeterProvider != nil {
+		application.workQueueMeterProvider = options.workQueueMeterProvider
 	}
 
 	if options.httpClient != nil {
@@ -169,23 +170,44 @@ func SetRemoteClient[T resource.Object[T]](manager *Manager) error {
 	return nil
 }
 
-func SetController[T resource.Object[T]](manager *Manager, controller InitReconciler[T], opts ...cl.StorageOption) error {
+func SetController[T resource.Object[T]](manager *Manager, controller InitReconciler[T], opts ...ControllerOption) error {
+	currentOpts := &controllerOptions{}
+	for _, opt := range opts {
+		opt(currentOpts)
+	}
+
 	sm, err := state.NewStateManagerProvider[T](manager.externalStorageAddress, manager.httpClient)
 	if err != nil {
 		return err
 	}
+
+	var storageOptions []cl.StorageOption
+	if currentOpts.rateLimits != nil {
+		storageOptions = append(storageOptions, cl.WithCustomRateLimits(currentOpts.rateLimits.Min, currentOpts.rateLimits.Max))
+	}
+
+	storageOptions = append(storageOptions, cl.WithMetricsWorkqueueProvider(manager.workQueueMeterProvider))
+
 	sc, err := cl.NewStorageController[T](
 		manager.shardID,
 		sm,
-		cl.NewMemoryStorage[T](manager.workqueueMeterProvider, opts...),
+		cl.NewMemoryStorage[T](storageOptions...),
 	)
 	if err != nil {
 		return err
 	}
 
+	var controlLoopOptions []cl.ClOption
+	controlLoopOptions = append(controlLoopOptions, cl.WithLogger(manager.logger))
+	if currentOpts.concurrentWorkers != 0 {
+		controlLoopOptions = append(controlLoopOptions, cl.WithConcurrentReconciles(currentOpts.concurrentWorkers))
+	}
+
+	controlLoopOptions = append(controlLoopOptions, cl.WithMetricsProvider(manager.controlLoopMeterProvider))
+
 	cl.SetStorage[T](manager.storageSet, sc)
 	controller.SetStorage(manager.storageSet)
-	currentLoop := cl.New[T](controller, sc, cl.WithLogger(manager.logger))
+	currentLoop := cl.New[T](controller, sc, controlLoopOptions...)
 	manager.registerController(currentLoop, sc)
 
 	return nil

@@ -12,9 +12,9 @@ type Options struct {
 	Logger                  controlloop.Logger
 	httpClient              *http.Client
 	informerAuthConfig      *InformerAuthConfig
-	meterProvider           metric.Meter
-	controllopMeterProvider metrics.MetricsProvider
-	workqueueMeterProvider  workqueue.MetricsProvider
+	meterProvider           metric.MeterProvider
+	controlLopMeterProvider metrics.MetricsProvider
+	workQueueMeterProvider  workqueue.MetricsProvider
 }
 
 type InformerAuthConfig struct {
@@ -43,26 +43,26 @@ func WithInformerAuthConfig(informerAuthConfig *InformerAuthConfig) Option {
 	}
 }
 
-func WithMeterProvider(meterProvider metric.Meter) Option {
+func WithMeterProvider(meterProvider metric.MeterProvider) Option {
 	return func(o *Options) {
 		o.meterProvider = meterProvider
 	}
 }
 
-func WithControllerMeterProvider(meterProvider metric.Meter) Option {
+func WithControllerMeterProvider(meterProvider metric.MeterProvider) Option {
 	return func(o *Options) {
 		o.meterProvider = meterProvider
 	}
 }
 
-func WithControllopMeterProvider(controllopMeterProvider metrics.MetricsProvider) Option {
+func WithControlLopMeterProvider(controllopMeterProvider metrics.MetricsProvider) Option {
 	return func(o *Options) {
-		o.controllopMeterProvider = controllopMeterProvider
+		o.controlLopMeterProvider = controllopMeterProvider
 	}
 }
 
-func WithWorkqueueMeterProvider(workqueueMeterProvider workqueue.MetricsProvider) Option {
+func WithWorkQueueMeterProvider(workqueueMeterProvider workqueue.MetricsProvider) Option {
 	return func(o *Options) {
-		o.workqueueMeterProvider = workqueueMeterProvider
+		o.workQueueMeterProvider = workqueueMeterProvider
 	}
 }
