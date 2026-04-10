@@ -3,11 +3,12 @@ package runtimemanager
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"sync"
+
 	"github.com/reconcile-kit/controlloop/metrics"
 	"go.opentelemetry.io/otel"
 	"k8s.io/client-go/util/workqueue"
-	"net/http"
-	"sync"
 
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
@@ -18,6 +19,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
+// Test flow only
 type InitReconciler[T resource.Object[T]] interface {
 	cl.Reconcile[T]
 	SetStorage(storage *cl.StorageSet)
