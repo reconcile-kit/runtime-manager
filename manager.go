@@ -3,11 +3,13 @@ package runtimemanager
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"sync"
+	"time"
+
 	"github.com/reconcile-kit/controlloop/metrics"
 	"go.opentelemetry.io/otel"
 	"k8s.io/client-go/util/workqueue"
-	"net/http"
-	"sync"
 
 	"github.com/reconcile-kit/api/resource"
 	cl "github.com/reconcile-kit/controlloop"
@@ -122,7 +124,11 @@ func (a *Manager) Run(ctx context.Context) error {
 		a.stopped = append(a.stopped, r.controller)
 	}
 
-	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID, event.WithLogger(a.logger))
+	eventProvider, err := event.NewRedisStreamListenerWithConfig(redisConfig, a.shardID,
+		event.WithLogger(a.logger),
+		event.WithListenerBlock(time.Second*60),
+		event.WithReadTimeout(time.Second*70),
+	)
 	if err != nil {
 		return err
 	}
