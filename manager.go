@@ -133,7 +133,12 @@ func (a *Manager) Run(ctx context.Context) error {
 		return err
 	}
 
-	informer := cl.NewStorageInformer(a.shardID, eventProvider, receivers)
+	// The informer gets the manager's logger like everything else here. Without
+	// it an event the informer could not take is reported to stdout instead of
+	// wherever the caller sends its logs — and an event that goes missing is
+	// exactly the case someone goes looking through those logs for.
+	informer := cl.NewStorageInformer(a.shardID, eventProvider, receivers,
+		cl.WithInformerLogger(a.logger))
 	err = informer.Run(ctx)
 	if err != nil {
 		return err
