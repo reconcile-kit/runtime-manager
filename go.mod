@@ -3,10 +3,10 @@ module github.com/reconcile-kit/runtime-manager
 go 1.24.2
 
 require (
-	github.com/reconcile-kit/api v0.0.16
-	github.com/reconcile-kit/controlloop v0.0.18
+	github.com/reconcile-kit/api v0.0.17
+	github.com/reconcile-kit/controlloop v0.0.19
 	github.com/reconcile-kit/redis-informer-provider v0.0.8
-	github.com/reconcile-kit/state-manager-provider v0.0.9
+	github.com/reconcile-kit/state-manager-provider v0.0.12
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/metric v1.37.0
 	go.opentelemetry.io/otel/sdk/metric v1.37.0
