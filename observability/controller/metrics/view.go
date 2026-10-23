@@ -16,10 +16,10 @@ var workqueueBuckets = []float64{
 
 func ViewOptions() []sdkmetric.Option {
 	return []sdkmetric.Option{
-		// 1) controller_runtime_reconcile_time_seconds
+		// 1) controlloop_reconcile_time_seconds
 		sdkmetric.WithView(
 			sdkmetric.NewView(
-				sdkmetric.Instrument{Name: "controller_runtime_reconcile_time_seconds"},
+				sdkmetric.Instrument{Name: "controlloop_reconcile_time_seconds"},
 				sdkmetric.Stream{
 					Aggregation: sdkmetric.AggregationExplicitBucketHistogram{
 						Boundaries: reconcileBuckets,
